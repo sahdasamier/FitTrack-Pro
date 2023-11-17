@@ -8,7 +8,7 @@ const app = express()
 
 
 // middleware
-app.use(express.json())
+app.use(express.json()) //to access to the database through the middleware
 
 app.use((req, res, next) => { //you have to add next to be abe to move to the next peace in the middleware
   console.log(req.path, req.method)
@@ -17,7 +17,7 @@ app.use((req, res, next) => { //you have to add next to be abe to move to the ne
 
 
 // routes
-app.use('/api/workouts', workoutRoutes) 
+app.use('/api/workouts', workoutRoutes) //the path you should to check it or change it in post man 
 
 
  // listen for requests
