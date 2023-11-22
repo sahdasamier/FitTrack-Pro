@@ -27,10 +27,10 @@ mongoose.connect(process.env.MONGO_URI)
    // listen for requests
  app.listen(process.env.PORT, () => { //that mean it depends on the port in the env file
   console.log('listening on port', process.env.PORT)
+ })
 })
-  })
   .catch((err) => {
     console.log(err)
-  }) 
+}) 
 
  
