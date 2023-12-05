@@ -1,60 +1,83 @@
-const  Mongoose  = require('mongoose')
-const Workout =require('../models/workoutModel')
+const Workout = require('../models/workoutModel')
+const mongoose = require('mongoose')
 
-//get all workouts
-const getWorkouts = async(req,res)=>{
-  const workouts = await Workout.find({}).sort({createAt: -1})
-res.status(200).json(workouts)
+// get all workouts
+const getWorkouts = async (req, res) => {
+  const workouts = await Workout.find({}).sort({createdAt: -1})
 
+  res.status(200).json(workouts)
 }
 
-//get single workout
+// get a single workout
+const getWorkout = async (req, res) => {
+  const { id } = req.params
 
-const getWorkout = async(req,res)=>{
- const {id} = req.params
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(404).json({error: 'No such workout'})
+  }
 
-if(!Mongoose.Types.ObjectId.isValid(id)){
-  return res.status(404).json({error:'No such workout'})
-}
- const workout = await Workout.findById(id)
- if(!workout){
-  return res.status(400).json({ error:'No such workout' })
-}
+  const workout = await Workout.findById(id)
+
+  if (!workout) {
+    return res.status(404).json({error: 'No such workout'})
+  }
+
   res.status(200).json(workout)
 }
 
-//create a new workout
-const createWorkout = async(req,res)=>{
-    const {title ,load, reps} =req.body //this schema in the modules which user should add to the date base 
-    
-    //add doc to db
-    try{
-      const workout = await Workout.create({title, load, reps}) //now we storing Workout.create() this in workout
-      res.status(200).json(workout)
+// create a new workout
+const createWorkout = async (req, res) => {
+  const {title, load, reps} = req.body
 
-    }catch(error){
-      res.status(400).json({mssg:"error in posting work"})
-    }
+  // add to the database
+  try {
+    const workout = await Workout.create({ title, load, reps })
+    res.status(200).json(workout)
+  } catch (error) {
+    res.status(400).json({ error: error.message })
+  }
 }
 
-//delete a workout
-const deleteWorkout = async (req,res)=>{
-  const { id }=req.params;
-  try{
-    const workout = await Workout.deleteOne({title,load,reps})
-    res.status(200).json(workout)
-  }catch(error){
-    res.status(400).json({msg:"Error deleting workout"})
+// delete a workout
+const deleteWorkout = async (req, res) => {
+  const { id } = req.params
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({error: 'No such workout'})
   }
 
+  const workout = await Workout.findOneAndDelete({_id: id})
+
+  if(!workout) {
+    return res.status(400).json({error: 'No such workout'})
+  }
+
+  res.status(200).json(workout)
 }
 
-//update a workout
+// update a workout
+const updateWorkout = async (req, res) => {
+  const { id } = req.params
 
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({error: 'No such workout'})
+  }
+
+  const workout = await Workout.findOneAndUpdate({_id: id}, {
+    ...req.body
+  })
+
+  if (!workout) {
+    return res.status(400).json({error: 'No such workout'})
+  }
+
+  res.status(200).json(workout)
+}
 
 module.exports = {
-  createWorkout,
   getWorkouts,
   getWorkout,
-  deleteWorkout
+  createWorkout,
+  deleteWorkout,
+  updateWorkout
 }
