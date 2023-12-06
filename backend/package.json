@@ -15,5 +15,8 @@
     "express": "^4.18.2",
     "mongoose": "^8.0.1"
   },
+  "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^1.0.10"
+  },
   "description": ""
 }
