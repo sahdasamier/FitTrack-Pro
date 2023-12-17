@@ -14,6 +14,11 @@ switch(action.type) {
       workouts:[action.payload, ...state.workouts]
 
     }
+  case 'DELETE_WORKOUT':
+    return{
+      workouts:state.workouts.filter((w)=>w._id !== action.payload._id) //that is to check if th id equal to the id you want to delete  
+
+    }
     default:
       return state
  }
