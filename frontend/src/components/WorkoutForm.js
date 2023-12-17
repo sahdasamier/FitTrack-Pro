@@ -7,6 +7,7 @@ const WorkoutForm =() =>{
   const [load , setLoad] =useState ('')
   const [reps , setReps] =useState ('')
   const [error, setError] =useState(null)
+  const [emptyFields,setEmptyFields]= useState([])
 
   const handleSubmit = async(e) =>{ //we use async cuz we will reach out the api 
     e.preventDefault() // we prevent the default action which is here refreshing
@@ -18,17 +19,18 @@ const WorkoutForm =() =>{
             "content-type" :"application/json"
     }
     })
-   const json =await response.json()
+   const json = await response.json()
 
    if (!response.ok){
       setError(json.error)
+      setEmptyFields(json.emptyFields)
    }
    if(response.ok){
+    setEmptyFields([])
+    setError(null)
     setTitle('')
     setLoad('')
     setReps('')
-
-    setError(null)
     console.log('new workout add',json)
     dispatch({type:'CREATE_WORKOUT',payload:json})
    }
@@ -43,6 +45,8 @@ const WorkoutForm =() =>{
      type="text"
      onChange={(e)=> setTitle(e.target.value)} 
      value={title}
+     className={emptyFields.includes('title') ? 'error' : ''}
+    // If the condition (emptyFields.includes('title')) is true, it evaluates to the string 'error', indicating that the CSS class 'error' should be applied. If the condition is false, it evaluates to an empty string (''), meaning no additional class is applied.
     />
 
    <label >Load (in Kg):</label>
@@ -50,6 +54,8 @@ const WorkoutForm =() =>{
       type="number"
       onChange={(e)=> setLoad(e.target.value)} 
       value={load}
+      className={emptyFields.includes('load') ? 'error' : ''}
+
      />
 
      <label>Reps:</label>
@@ -57,6 +63,7 @@ const WorkoutForm =() =>{
       type="number"
       onChange={(e)=> setReps(e.target.value)} 
       value={reps}
+      className={emptyFields.includes('reps') ? 'error' : ''}
      />
 
      <button>Add workout</button>
