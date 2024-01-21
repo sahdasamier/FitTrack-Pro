@@ -9,7 +9,7 @@ through
 
 
 
-& if you face any problem related to the installation like if all folders related to package you install 
+# if you face any problem related to the installation like if all folders related to package you install 
 add to your git-hub or in source control please follow the steps : 
 Add node_modules to .gitignore:
 
@@ -26,7 +26,13 @@ git add .gitignore
 git commit -m "Add .gitignore with node_modules"
 Push to GitHub:
 
-Push your changes to GitHub:
+# Push your changes to GitHub:
 bash
 Copy code
 git push origin main
+
+# to run the web site 
+1- make activate to your connection in mongo db and add IP address 
+2- open backend terminal from "cd backend " then run backend from "npm start" "npm run dev"/ 
+3-open front end terminal "cd frontend" then run front end through "npm start"
+don't forget to do adjusting package.json to make this commands meaningful 

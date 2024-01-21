@@ -11,6 +11,8 @@ root.render(
     <WorkoutContextProvider>
      <App />
     </WorkoutContextProvider>
+    {/* //WorkoutContextProvider likely initializes a context with a certain state and provides methods or values related to the workout context.
+Components within the WorkoutContextProvider can access and update this shared state or use the provided functionality. */}
   </React.StrictMode>
 );
 
