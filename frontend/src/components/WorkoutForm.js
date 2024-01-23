@@ -10,7 +10,7 @@ const WorkoutForm =() =>{
   const [emptyFields,setEmptyFields]= useState([])
 
   const handleSubmit = async(e) =>{ //we use async cuz we will reach out the api 
-    e.preventDefault() // we prevent the default action which is here refreshing
+    e.preventDefault() // we prevent the default action which is here refreshing or reload the page 
     const workout ={title,reps,load}
     const response = await fetch('/api/workouts',{
         method:'POST',
