@@ -18,7 +18,8 @@ app.use((req, res, next) => { //The code you provided is a custom middleware fun
 
 // routes
 app.use('/api/workouts', workoutRoutes) //the path you should to check it or change it in postman app ,"mean you can add to your local host that api" 
-app.use('api/user', userRoutes)
+app.use('/api/user', userRoutes) 
+
 // connect to db
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
