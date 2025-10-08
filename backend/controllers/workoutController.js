@@ -78,7 +78,7 @@ const updateWorkout = async (req, res) => {
 
   const workout = await Workout.findOneAndUpdate({_id: id}, {
     ...req.body //{...req.body}: This uses the spread (...) operator to take all the properties from the req.body object. req.body typically contains data sent in the request body, often in a POST or PUT request. This line is updating the document with the values from the request body.
-  })
+  }, { new: true }) // Return the updated document
 
   if (!workout) {
     return res.status(400).json({error: 'No such workout'})
