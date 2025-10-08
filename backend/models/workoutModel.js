@@ -14,6 +14,20 @@ const workoutSchema = new Schema({
     load:{
         type:Number,
         required:true
+    },
+    imageUrl:{
+        type:String,
+        required:false
+    },
+    gender:{
+        type:String,
+        enum:['male', 'female'],
+        required:false
+    },
+    exerciseType:{
+        type:String,
+        enum:['chest', 'back', 'legs', 'shoulders', 'arms', 'core', 'other'],
+        required:false
     }
 },{timestamps:true }) //when we create new doc , it will automatically create that props and update that prosperity as well and said it created   
 

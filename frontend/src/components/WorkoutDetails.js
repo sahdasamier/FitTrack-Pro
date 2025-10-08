@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useWorkoutsContext } from '../hooks/useWorkoutsContext'
 import formatDistanceToNow from 'date-fns/formatDistanceToNow'
+import Tooltip from './Tooltip'
 
 const WorkoutDetails = ({ workout, onDelete, onEdit }) => {
     const { dispatch } = useWorkoutsContext()
@@ -8,6 +9,7 @@ const WorkoutDetails = ({ workout, onDelete, onEdit }) => {
     const [editTitle, setEditTitle] = useState(workout.title)
     const [editLoad, setEditLoad] = useState(workout.load)
     const [editReps, setEditReps] = useState(workout.reps)
+    const [editImageUrl, setEditImageUrl] = useState(workout.imageUrl || '')
     
     const handleDelete = async() => {
         const response = await fetch('/api/workouts/'+ workout._id, {
@@ -27,7 +29,8 @@ const WorkoutDetails = ({ workout, onDelete, onEdit }) => {
         const updatedWorkout = {
             title: editTitle,
             load: editLoad,
-            reps: editReps
+            reps: editReps,
+            imageUrl: editImageUrl
         }
 
         const response = await fetch('/api/workouts/' + workout._id, {
@@ -51,6 +54,7 @@ const WorkoutDetails = ({ workout, onDelete, onEdit }) => {
         setEditTitle(workout.title)
         setEditLoad(workout.load)
         setEditReps(workout.reps)
+        setEditImageUrl(workout.imageUrl || '')
         setIsEditing(false)
     }
 
@@ -73,7 +77,7 @@ const WorkoutDetails = ({ workout, onDelete, onEdit }) => {
 
                     <div className="edit-inline-inputs">
                         <div className="edit-input-group">
-                            <label>Load (kg):</label>
+                            <label>Weight (kg):</label>
                             <input
                                 type="number"
                                 value={editLoad}
@@ -82,7 +86,7 @@ const WorkoutDetails = ({ workout, onDelete, onEdit }) => {
                             />
                         </div>
                         <div className="edit-input-group">
-                            <label>Reps:</label>
+                            <label>Repetitions:</label>
                             <input
                                 type="number"
                                 value={editReps}
@@ -91,6 +95,14 @@ const WorkoutDetails = ({ workout, onDelete, onEdit }) => {
                             />
                         </div>
                     </div>
+
+                    <label>Exercise Image URL (optional):</label>
+                    <input
+                        type="url"
+                        value={editImageUrl}
+                        onChange={(e) => setEditImageUrl(e.target.value)}
+                        placeholder="https://example.com/image.jpg"
+                    />
 
                     <div className="edit-actions">
                         <button type="submit" className="btn-save">
@@ -107,21 +119,39 @@ const WorkoutDetails = ({ workout, onDelete, onEdit }) => {
     
     return(
         <div className="workout-details">
+            {workout.imageUrl && (
+                <div className="workout-image-container">
+                    <img 
+                        src={workout.imageUrl} 
+                        alt={workout.title}
+                        className="workout-image"
+                        onError={(e) => {
+                            e.target.style.display = 'none'
+                        }}
+                    />
+                </div>
+            )}
             <h4>{workout.title}</h4>
             
             <div className="workout-stats">
-                <div className="stat-item">
-                    <span className="stat-label">💪 Load</span>
-                    <span className="stat-value">{workout.load} kg</span>
-                </div>
-                <div className="stat-item">
-                    <span className="stat-label">🔄 Reps</span>
-                    <span className="stat-value">{workout.reps}</span>
-                </div>
-                <div className="stat-item stat-volume">
-                    <span className="stat-label">📊 Volume</span>
-                    <span className="stat-value">{totalVolume} kg</span>
-                </div>
+                <Tooltip text="Weight lifted in this exercise" position="top">
+                    <div className="stat-item">
+                        <span className="stat-label">⚡ Weight</span>
+                        <span className="stat-value">{workout.load} kg</span>
+                    </div>
+                </Tooltip>
+                <Tooltip text="Number of times you repeated the exercise" position="top">
+                    <div className="stat-item">
+                        <span className="stat-label">🔁 Repetitions</span>
+                        <span className="stat-value">{workout.reps}</span>
+                    </div>
+                </Tooltip>
+                <Tooltip text="Total weight moved (Weight × Repetitions)" position="top">
+                    <div className="stat-item stat-volume">
+                        <span className="stat-label">📊 Total Volume</span>
+                        <span className="stat-value">{totalVolume} kg</span>
+                    </div>
+                </Tooltip>
             </div>
             
             <p className="timestamp">
@@ -129,12 +159,16 @@ const WorkoutDetails = ({ workout, onDelete, onEdit }) => {
             </p>
             
             <div className="workout-actions">
-                <span className="material-symbols-outlined edit-btn" onClick={() => setIsEditing(true)}>
-                    edit
-                </span>
-                <span className="material-symbols-outlined delete-btn" onClick={handleDelete}>
-                    delete
-                </span>
+                <Tooltip text="Edit this workout" position="bottom">
+                    <span className="material-symbols-outlined edit-btn" onClick={() => setIsEditing(true)}>
+                        edit
+                    </span>
+                </Tooltip>
+                <Tooltip text="Delete this workout" position="bottom">
+                    <span className="material-symbols-outlined delete-btn" onClick={handleDelete}>
+                        delete
+                    </span>
+                </Tooltip>
             </div>
         </div>
     ) 

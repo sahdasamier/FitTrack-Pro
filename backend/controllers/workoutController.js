@@ -27,7 +27,7 @@ const getWorkout = async (req, res) => {
 
 // create a new workout
 const createWorkout = async (req, res) => {
-  const {title, load, reps} = req.body
+  const {title, load, reps, imageUrl, gender, exerciseType} = req.body
   
   let emptyFields= []
   if(!title ){
@@ -44,7 +44,7 @@ const createWorkout = async (req, res) => {
   }
   // add to the database
   try {
-    const workout = await Workout.create({ title, load, reps })
+    const workout = await Workout.create({ title, load, reps, imageUrl, gender, exerciseType })
     res.status(200).json(workout)
   } catch (error) {
     res.status(400).json({ error: error.message })

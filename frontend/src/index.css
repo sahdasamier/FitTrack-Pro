@@ -230,7 +230,7 @@ header h1:hover {
 .stat-value {
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--primary);
+  color: var(--primary); 
 }
 
 .workout-details .timestamp {
@@ -283,6 +283,28 @@ form.create {
   border: 1px solid var(--border);
   position: sticky;
   top: 100px;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Form scrollbar styling */
+form.create::-webkit-scrollbar {
+  width: 8px;
+}
+
+form.create::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+  border-radius: var(--radius-md);
+}
+
+form.create::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: var(--radius-md);
+}
+
+form.create::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-dark);
 }
 
 form.create h3 {
@@ -828,6 +850,337 @@ input::placeholder {
   opacity: 0.6;
 }
 
+/* Tooltip Styles */
+.tooltip-wrapper {
+  position: relative;
+  display: inline-flex;
+  width: 100%;
+}
+
+.tooltip {
+  position: absolute;
+  background: var(--text-primary);
+  color: white;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-md);
+  font-size: 0.8rem;
+  font-weight: 500;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 1000;
+  box-shadow: var(--shadow-lg);
+}
+
+.tooltip::before {
+  content: '';
+  position: absolute;
+  border: 6px solid transparent;
+}
+
+.tooltip-top {
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+}
+
+.tooltip-top::before {
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-top-color: var(--text-primary);
+}
+
+.tooltip-bottom {
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(-4px);
+}
+
+.tooltip-bottom::before {
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-bottom-color: var(--text-primary);
+}
+
+.tooltip-wrapper:hover .tooltip {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Navbar Button */
+.navbar-btn {
+  padding: 0.625rem 1.25rem;
+  background: var(--primary-gradient);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: var(--shadow-sm);
+  font-family: inherit;
+}
+
+.navbar-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.navbar-btn:active {
+  transform: translateY(0);
+}
+
+.navbar-btn-icon {
+  font-size: 1.1rem;
+  display: inline-block;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+/* Stat card tooltips - remove pointer cursor from cards */
+.stats-grid .tooltip-wrapper .stat-card {
+  cursor: help;
+}
+
+/* Edit and delete button tooltips */
+.workout-actions .tooltip-wrapper {
+  display: inline-flex;
+  width: auto;
+}
+
+/* Search and filter tooltips */
+.search-filter-container .tooltip-wrapper {
+  width: 100%;
+}
+
+/* Workout stats tooltips */
+.workout-stats .tooltip-wrapper {
+  width: auto;
+  flex: 1;
+}
+
+.workout-stats .tooltip-wrapper .stat-item {
+  width: 100%;
+  cursor: help;
+}
+
+/* Form button tooltip */
+form .tooltip-wrapper {
+  width: 100%;
+}
+
+form .tooltip-wrapper button {
+  width: 100%;
+}
+
+/* Filter box tooltip */
+.filter-box .tooltip-wrapper {
+  width: auto;
+}
+
+/* Gender Selection Buttons */
+.gender-selection {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.gender-btn {
+  padding: 1rem;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.gender-btn:hover {
+  border-color: var(--primary);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.gender-btn.active {
+  background: var(--primary-gradient);
+  color: white;
+  border-color: transparent;
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+.gender-btn:active {
+  transform: translateY(0);
+}
+
+/* Workout Image Styles */
+.workout-image-container {
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  margin-bottom: 1rem;
+  position: relative;
+  background: linear-gradient(135deg, var(--bg-primary) 0%, var(--border) 100%);
+}
+
+.workout-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.workout-details:hover .workout-image {
+  transform: scale(1.05);
+}
+
+.workout-image-container::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(to top, rgba(0,0,0,0.3), transparent);
+  pointer-events: none;
+}
+
+/* Image Options (Radio buttons) */
+.image-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.image-option-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1rem;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.image-option-item:hover {
+  border-color: var(--primary);
+  background: var(--bg-secondary);
+}
+
+.image-option-item input[type="radio"] {
+  width: auto;
+  margin: 0;
+  cursor: pointer;
+  accent-color: var(--primary);
+}
+
+.image-option-item input[type="radio"]:checked + span {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.image-option-item span {
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  transition: all 0.2s ease;
+}
+
+/* Image help text */
+.image-help {
+  margin-top: -0.75rem;
+  margin-bottom: 1rem;
+}
+
+.image-help small {
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* Image Select Dropdown */
+.image-select {
+  padding: 0.875rem 1rem;
+  margin-bottom: 1rem;
+  width: 100%;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: 1rem;
+  font-family: inherit;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.image-select:focus {
+  outline: none;
+  border-color: var(--primary);
+  background: var(--bg-secondary);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+/* Custom URL Input */
+.custom-url-input {
+  margin-top: 0.5rem;
+}
+
+/* Image Preview */
+.image-preview {
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background: var(--bg-primary);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+}
+
+.image-preview small {
+  display: block;
+  margin-bottom: 0.75rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.025em;
+}
+
+.form-image-preview {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .stats-grid {
@@ -863,5 +1216,15 @@ input::placeholder {
 
   .stat-volume {
     grid-column: span 1;
+  }
+
+  .tooltip {
+    font-size: 0.75rem;
+    padding: 0.375rem 0.625rem;
+  }
+
+  .navbar-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
   }
 }
