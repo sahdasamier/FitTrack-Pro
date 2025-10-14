@@ -17,11 +17,19 @@ const Home = () => {
   useEffect(() => {
     const fetchWorkouts = async () => { 
       setIsLoading(true)
-      const response = await fetch(`${API_BASE_URL}/api/workouts`)
-      const json = await response.json()
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/workouts`)
+        const json = await response.json()
 
-      if (response.ok) {
-        dispatch({ type: 'SET_WORKOUTS', payload: json })
+        if (response.ok) {
+          dispatch({ type: 'SET_WORKOUTS', payload: Array.isArray(json) ? json : [] })
+        } else {
+          console.error('Failed to fetch workouts:', response.status, json)
+          dispatch({ type: 'SET_WORKOUTS', payload: [] })
+        }
+      } catch (error) {
+        console.error('Network error fetching workouts:', error)
+        dispatch({ type: 'SET_WORKOUTS', payload: [] })
       }
       setIsLoading(false)
     }
@@ -47,10 +55,10 @@ const Home = () => {
 
   // Filter and sort workouts
   const getFilteredAndSortedWorkouts = () => {
-    if (!workouts) return []
+    if (!workouts || !Array.isArray(workouts)) return []
 
     let filtered = workouts.filter(workout =>
-      workout.title.toLowerCase().includes(searchTerm.toLowerCase())
+      workout.title && workout.title.toLowerCase().includes((searchTerm || '').toLowerCase())
     )
 
     switch(sortBy) {

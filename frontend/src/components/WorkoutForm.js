@@ -140,21 +140,41 @@ const WorkoutForm = ({ onSuccess }) => {
 
   const handleSubmit = async(e) => {
     e.preventDefault()
-    const workout = { title, reps, load, imageUrl, gender, exerciseType }
-    const response = await fetch(`${API_BASE_URL}/api/workouts`, {
-      method: 'POST',
-      body: JSON.stringify(workout),
-      headers: {  
-        "content-type": "application/json"
-      }
-    })
-    const json = await response.json()
-
-    if (!response.ok) {
-      setError(json.error)
-      setEmptyFields(json.emptyFields)
+    
+    // Client-side validation
+    if (!title?.trim()) return setError('Please enter an exercise name.')
+    if (!load || Number(load) <= 0) return setError('Weight must be greater than 0.')
+    if (!reps || Number(reps) <= 0) return setError('Repetitions must be greater than 0.')
+    
+    // Prepare payload with proper types
+    const workout = {
+      title: title.trim(),
+      load: Number(load),
+      reps: Number(reps),
+      imageUrl: imageUrl?.trim() || '',
+      gender: gender?.trim() || 'male',
+      exerciseType: exerciseType?.trim() || ''
     }
-    if (response.ok) {
+    
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/workouts`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(workout)
+      })
+      
+      const json = await response.json().catch(() => ({}))
+      
+      if (!response.ok) {
+        console.error('Create workout failed', response.status, json)
+        setError(json?.error || json?.message || 'Failed to create workout')
+        setEmptyFields(json?.emptyFields || [])
+        return
+      }
+      
+      // Success
       setEmptyFields([])
       setError(null)
       setRecentTitles((prev) => Array.from(new Set([title, ...prev])).slice(0, 10))
@@ -167,6 +187,9 @@ const WorkoutForm = ({ onSuccess }) => {
       dispatch({ type: 'CREATE_WORKOUT', payload: json })
       if (onSuccess) onSuccess('Workout added successfully!')
       setShowTimer(true)
+    } catch (error) {
+      console.error('Network error:', error)
+      setError('Network error. Please check your connection.')
     }
   }
   
@@ -222,7 +245,7 @@ const WorkoutForm = ({ onSuccess }) => {
               setTitle(e.target.value)
               setImageUrl(resolveImageFor(e.target.value, gender))
             }}
-            className={emptyFields.includes('title') ? 'error' : ''}
+            className={(emptyFields || []).includes('title') ? 'error' : ''}
           />
           <button type="button" className="dropdown-toggle" onClick={() => setIsExerciseDropdownOpen(o => !o)}>
             ▾
@@ -234,7 +257,7 @@ const WorkoutForm = ({ onSuccess }) => {
                 <div className="dropdown-list">
                   {exerciseList
                     .filter(e => !exerciseType || exerciseType === 'other' || e.type === exerciseType)
-                    .filter(e => !exerciseQuery || e.name.toLowerCase().includes(exerciseQuery.toLowerCase()))
+                    .filter(e => !exerciseQuery || e.name.toLowerCase().includes((exerciseQuery || '').toLowerCase()))
                     .map(e => (
                       <button key={e.name} type="button" className="dropdown-item" onClick={() => onSelectExercise(e.name)}>
                         <span className="item-name">{e.name}</span>
@@ -243,7 +266,7 @@ const WorkoutForm = ({ onSuccess }) => {
                     ))}
                   {exerciseList
                     .filter(e => !exerciseType || exerciseType === 'other' || e.type === exerciseType)
-                    .filter(e => !exerciseQuery || e.name.toLowerCase().includes(exerciseQuery.toLowerCase())).length === 0 && (
+                    .filter(e => !exerciseQuery || e.name.toLowerCase().includes((exerciseQuery || '').toLowerCase())).length === 0 && (
                       <div className="dropdown-empty">
                         <small>No matches. You can use a custom name.</small>
                       </div>
@@ -260,7 +283,7 @@ const WorkoutForm = ({ onSuccess }) => {
       {recentTitles.length > 0 && (
         <div className="autocomplete">
           {recentTitles
-            .filter(t => t.toLowerCase().includes(title.toLowerCase()) && t !== title)
+            .filter(t => t.toLowerCase().includes((title || '').toLowerCase()) && t !== title)
             .slice(0, 5)
             .map(t => (
               <button key={t} type="button" className="autocomplete-item" onClick={() => setTitle(t)}>{t}</button>
@@ -275,7 +298,7 @@ const WorkoutForm = ({ onSuccess }) => {
           onChange={(e) => setLoad(e.target.value)} 
           value={load}
           placeholder="e.g., 80"
-          className={emptyFields.includes('load') ? 'error' : ''}
+          className={(emptyFields || []).includes('load') ? 'error' : ''}
         />
         <button type="button" className="advice-toggle" onClick={() => setShowAdvisor(s => !s)}>
           {showAdvisor ? 'Hide tips' : 'Get tips'}
@@ -326,7 +349,7 @@ const WorkoutForm = ({ onSuccess }) => {
           onChange={(e) => setReps(e.target.value)} 
           value={reps}
           placeholder="e.g., 12"
-          className={emptyFields.includes('reps') ? 'error' : ''}
+          className={(emptyFields || []).includes('reps') ? 'error' : ''}
         />
         <button type="button" className="advice-apply" onClick={() => setReps(String(recommendReps()))}>Use recommended</button>
       </div>
@@ -348,7 +371,7 @@ const WorkoutForm = ({ onSuccess }) => {
                 type="radio"
                 name="imageSource"
                 value="default"
-                checked={imageUrl.includes('/images/exercises/')}
+                checked={(imageUrl || '').includes('/images/exercises/')}
                 onChange={() => {
                   const imagePath = resolveImageFor(title, gender)
                   setImageUrl(imagePath)
@@ -362,14 +385,14 @@ const WorkoutForm = ({ onSuccess }) => {
                 type="radio"
                 name="imageSource"
                 value="url"
-                checked={imageUrl && !imageUrl.includes('/images/exercises/')}
+                checked={imageUrl && !(imageUrl || '').includes('/images/exercises/')}
                 onChange={() => setImageUrl('https://')}
               />
               <span>🌐 Paste Image URL</span>
             </label>
           </div>
 
-          {imageUrl && !imageUrl.includes('/images/exercises/') && (
+          {imageUrl && !(imageUrl || '').includes('/images/exercises/') && (
             <>
               <label>Image URL:</label>
               <input
