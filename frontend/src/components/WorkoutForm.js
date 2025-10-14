@@ -101,7 +101,7 @@ const WorkoutForm = ({ onSuccess }) => {
   const classifyExercise = (name) => {
     const n = (name || '').toLowerCase()
     const big = ['squat', 'deadlift', 'bench', 'overhead press', 'ohp', 'row', 'pulldown', 'lunge']
-    return big.some(k => n.includes(k)) ? 'compound' : 'isolation'
+    return big.some(k => (n || '').includes(k)) ? 'compound' : 'isolation'
   }
 
   const estimateStartingLoad = () => {
@@ -171,8 +171,22 @@ const WorkoutForm = ({ onSuccess }) => {
       
       if (!response.ok) {
         console.error('Create workout failed', response.status, json)
-        setError(json?.error || json?.message || 'Failed to create workout')
-        setEmptyFields(json?.emptyFields || [])
+        
+        // Handle specific error cases
+        if (response.status === 400) {
+          if (json.error?.includes('user is not allowed')) {
+            setError('Database connection issue. Please try again later.')
+          } else if (json.emptyFields) {
+            setError('Please fill in all required fields.')
+            setEmptyFields(json.emptyFields)
+          } else {
+            setError(json?.error || json?.message || 'Invalid data. Please check your inputs.')
+          }
+        } else if (response.status >= 500) {
+          setError('Server error. Please try again later.')
+        } else {
+          setError(json?.error || json?.message || 'Failed to create workout')
+        }
         return
       }
       
@@ -191,7 +205,37 @@ const WorkoutForm = ({ onSuccess }) => {
       setShowTimer(true)
     } catch (error) {
       console.error('Network error:', error)
-      setError('Network error. Please check your connection.')
+      
+      // Fallback: Save to localStorage if backend is unavailable
+      try {
+        const localWorkouts = JSON.parse(localStorage.getItem('workouts') || '[]')
+        const newWorkout = {
+          ...workout,
+          _id: Date.now().toString(),
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        }
+        localWorkouts.unshift(newWorkout)
+        localStorage.setItem('workouts', JSON.stringify(localWorkouts))
+        
+        // Update UI as if it was successful
+        setEmptyFields([])
+        setError(null)
+        setRecentTitles((prev) => Array.from(new Set([title, ...prev])).slice(0, 10))
+        setLastSet({ title, load, reps })
+        setTitle('')
+        setLoad('')
+        setReps('')
+        setImageUrl('')
+        setExerciseType('')
+        dispatch({ type: 'CREATE_WORKOUT', payload: newWorkout })
+        if (onSuccess) onSuccess('Workout saved locally (backend unavailable)')
+        setShowTimer(true)
+        
+      } catch (localError) {
+        console.error('Local storage error:', localError)
+        setError('Network error. Unable to save workout.')
+      }
     }
   }
   

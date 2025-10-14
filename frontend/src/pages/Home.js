@@ -25,11 +25,15 @@ const Home = () => {
           dispatch({ type: 'SET_WORKOUTS', payload: Array.isArray(json) ? json : [] })
         } else {
           console.error('Failed to fetch workouts:', response.status, json)
-          dispatch({ type: 'SET_WORKOUTS', payload: [] })
+          // Fallback to localStorage if backend fails
+          const localWorkouts = JSON.parse(localStorage.getItem('workouts') || '[]')
+          dispatch({ type: 'SET_WORKOUTS', payload: localWorkouts })
         }
       } catch (error) {
         console.error('Network error fetching workouts:', error)
-        dispatch({ type: 'SET_WORKOUTS', payload: [] })
+        // Fallback to localStorage if network fails
+        const localWorkouts = JSON.parse(localStorage.getItem('workouts') || '[]')
+        dispatch({ type: 'SET_WORKOUTS', payload: localWorkouts })
       }
       setIsLoading(false)
     }
