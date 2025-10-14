@@ -1,63 +1,7 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# dependencies
-/node_modules
-/.pnp
-.pnp.js
-# Yarn 2/3 (Berry) specific
-.yarnrc.yml
-.yarn/*
-!/.yarn/cache  # Keep cache for CI/local consistency if desired, otherwise ignore everything
-.yarn/cache
-.yarn/global
-.yarn/releases
-.yarn/plugins
-.yarn/sdks
-.yarn/versions
-.yarn/build-state.yml
-.yarn.lock
-# Classic npm lock files
-package-lock.json
-npm-shrinkwrap.json
-
-# environment files (as you already had)
 .env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-.env.*.local
-.env.staging
-
-# testing
-/coverage
-# Jest cache
-/.jest/
-/test-results/
-
-# production/build
-/build
-/dist
-/out
-/es
-/lib
-/tmp
-
-# misc
+node_modules/
+*.log
 .DS_Store
-# Log files
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-# IDE/Editor files
-.vscode/
-.idea/
-*.iml
-*.iws
-*.iwp
-# OS-generated files
-thumbs.db
-# Next.js/Gatsby/other framework caches
-.next/
-.cache/
-public/.cache/
+.env.local
+.env.production
+.env.development
