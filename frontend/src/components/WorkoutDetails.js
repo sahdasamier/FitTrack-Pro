@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useWorkoutsContext } from '../hooks/useWorkoutsContext'
 import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 import Tooltip from './Tooltip'
+import ImageModal from './ImageModal'
 import { API_BASE_URL } from '../config/api'
 
 const WorkoutDetails = ({ workout, onDelete, onEdit }) => {
@@ -12,6 +13,7 @@ const WorkoutDetails = ({ workout, onDelete, onEdit }) => {
     const [editReps, setEditReps] = useState(workout.reps)
     const [editImageUrl, setEditImageUrl] = useState(workout.imageUrl || '')
     const [imageSrc, setImageSrc] = useState(workout.imageUrl || '')
+    const [isImageModalOpen, setIsImageModalOpen] = useState(false)
 
     // Normalize any absolute URLs (wrong origin/port) to a relative pathname on mount
     // so images always load from the current dev server origin.
@@ -165,6 +167,7 @@ const WorkoutDetails = ({ workout, onDelete, onEdit }) => {
                         src={imageSrc} 
                         alt={workout.title}
                         className="workout-image"
+                        onClick={() => setIsImageModalOpen(true)}
                         onError={(e) => {
                             // Retry with relative path if origin mismatch
                             try {
@@ -224,6 +227,12 @@ const WorkoutDetails = ({ workout, onDelete, onEdit }) => {
                     </span>
                 </Tooltip>
             </div>
+            
+            <ImageModal 
+                imageUrl={imageSrc}
+                isOpen={isImageModalOpen}
+                onClose={() => setIsImageModalOpen(false)}
+            />
         </div>
     ) 
 }

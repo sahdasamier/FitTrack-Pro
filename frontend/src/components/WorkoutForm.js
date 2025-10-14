@@ -2,6 +2,7 @@ import { useState } from "react"
 import { useWorkoutsContext } from '../hooks/useWorkoutsContext'
 import Tooltip from './Tooltip'
 import RestTimer from './RestTimer'
+import ImageModal from './ImageModal'
 import { useEffect } from 'react'
 import { API_BASE_URL } from '../config/api'
 
@@ -25,6 +26,7 @@ const WorkoutForm = ({ onSuccess }) => {
   const [advisorReps, setAdvisorReps] = useState('8')
   const [isExerciseDropdownOpen, setIsExerciseDropdownOpen] = useState(false)
   const [exerciseQuery, setExerciseQuery] = useState('')
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false)
   useEffect(() => {
     const load = async () => {
       try {
@@ -415,6 +417,7 @@ const WorkoutForm = ({ onSuccess }) => {
                 src={imageUrl} 
                 alt="Preview" 
                 className="form-image-preview"
+                onClick={() => setIsImageModalOpen(true)}
                 onError={(e) => {
                   // one-time retry with cleaned filename if we detect encoded trailing space before )
                   try {
@@ -447,6 +450,12 @@ const WorkoutForm = ({ onSuccess }) => {
       {error && 
         <div className="error">{error}</div>
       }
+      
+      <ImageModal 
+        imageUrl={imageUrl}
+        isOpen={isImageModalOpen}
+        onClose={() => setIsImageModalOpen(false)}
+      />
     </form>
   )
 }
