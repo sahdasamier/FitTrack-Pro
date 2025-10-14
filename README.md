@@ -251,6 +251,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **⭐ Star this repository if you found it helpful!**
 
-[![GitHub stars](https://img.shields.io/github/stars/yourusername/fit-track-pro?style=social)](https://github.com/yourusername/fit-track-pro)
+
 
 </div>
