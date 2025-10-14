@@ -2,6 +2,7 @@ require('dotenv').config()
 
 const express = require('express')
 const mongoose = require('mongoose')
+const cors = require('cors')
 const workoutRoutes  = require('./routes/workouts')
 const templateRoutes = require('./routes/workoutTemplates')
 const bodyMetricRoutes = require('./routes/bodyMetrics')
@@ -13,6 +14,13 @@ const app = express()
 
 
 // middleware
+app.use(cors({
+  origin: [
+    'http://localhost:3000',
+    'https://fit-track-pro-*.vercel.app', // or your exact domain
+  ],
+  credentials: true
+}))
 app.use(express.json()) //to access to the database through the middleware
 app.use((req, res, next) => { //The code you provided is a custom middleware function in an Express.js application. This middleware logs information about the incoming request, such as the request path and method, and then calls the next() function to move on to the next middleware in the stack or route handle
   console.log(req.path, req.method)

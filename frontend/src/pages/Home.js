@@ -5,6 +5,7 @@ import WorkoutForm from '../components/WorkoutForm'
 import WorkoutStats from '../components/WorkoutStats'
 import SearchFilter from '../components/SearchFilter'
 import Toast from '../components/Toast'
+import { API_BASE_URL } from '../config/api'
 
 const Home = () => {
   const { workouts, dispatch } = useWorkoutsContext()
@@ -16,7 +17,7 @@ const Home = () => {
   useEffect(() => {
     const fetchWorkouts = async () => { 
       setIsLoading(true)
-      const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:4000'}/api/workouts`)
+      const response = await fetch(`${API_BASE_URL}/api/workouts`)
       const json = await response.json()
 
       if (response.ok) {

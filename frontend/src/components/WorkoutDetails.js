@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useWorkoutsContext } from '../hooks/useWorkoutsContext'
 import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 import Tooltip from './Tooltip'
+import { API_BASE_URL } from '../config/api'
 
 const WorkoutDetails = ({ workout, onDelete, onEdit }) => {
     const { dispatch } = useWorkoutsContext()
@@ -28,7 +29,7 @@ const WorkoutDetails = ({ workout, onDelete, onEdit }) => {
     const isNewPR = workout && typeof workout.load === 'number' && typeof workout.reps === 'number' && workout._isPR
     
     const handleDelete = async() => {
-        const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:4000'}/api/workouts/`+ workout._id, {
+        const response = await fetch(`${API_BASE_URL}/api/workouts/`+ workout._id, {
             method:'DELETE'
         })
         const json = await response.json()
@@ -49,7 +50,7 @@ const WorkoutDetails = ({ workout, onDelete, onEdit }) => {
             imageUrl: editImageUrl
         }
 
-        const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:4000'}/api/workouts/` + workout._id, {
+        const response = await fetch(`${API_BASE_URL}/api/workouts/` + workout._id, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json'
@@ -87,7 +88,7 @@ const WorkoutDetails = ({ workout, onDelete, onEdit }) => {
             if (cleanedUrl !== currentUrl) {
                 setImageSrc(cleanedUrl)
                 // persist to backend
-                const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:4000'}/api/workouts/` + workout._id, {
+                const response = await fetch(`${API_BASE_URL}/api/workouts/` + workout._id, {
                     method: 'PATCH',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ imageUrl: cleanedUrl })
