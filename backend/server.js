@@ -14,13 +14,35 @@ const app = express()
 
 
 // middleware
-app.use(cors({
-  origin: [
-    'http://localhost:3000',
-    'https://fit-track-pro-*.vercel.app', // or your exact domain
-  ],
-  credentials: true
-}))
+const allowed = [
+  'http://localhost:3000',
+  'https://fit-track-pro-phi.vercel.app',
+];
+
+// robust check (also allows any *.vercel.app if you want)
+function originCheck(origin, cb) {
+  if (!origin) return cb(null, true); // Postman/cURL
+  try {
+    const ok =
+      allowed.includes(origin) ||
+      /\.vercel\.app$/i.test(new URL(origin).hostname);
+    return cb(ok ? null : new Error('CORS blocked'), ok);
+  } catch {
+    return cb(new Error('Bad Origin'), false);
+  }
+}
+
+app.use(
+  cors({
+    origin: originCheck,
+    credentials: true, // keep only if you actually use cookies/auth
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  })
+);
+
+// handle preflight for all routes
+app.options('*', cors());
 app.use(express.json()) //to access to the database through the middleware
 app.use((req, res, next) => { //The code you provided is a custom middleware function in an Express.js application. This middleware logs information about the incoming request, such as the request path and method, and then calls the next() function to move on to the next middleware in the stack or route handle
   console.log(req.path, req.method)
@@ -41,10 +63,9 @@ mongoose.connect(process.env.MONGO_URI)
   .then(() => {
     console.log('connected to database')
    // listen for requests
- app.listen(process.env.PORT, () => { //that mean it depends on the port in the env file
-  console.log('listening on port', process.env.PORT)
+    const PORT = process.env.PORT || 4000;
+    app.listen(PORT, () => console.log('API on', PORT))
  })
-})
   .catch((err) => {
     console.log(err)
 }) 
