@@ -10,6 +10,22 @@ const WorkoutDetails = ({ workout, onDelete, onEdit }) => {
     const [editLoad, setEditLoad] = useState(workout.load)
     const [editReps, setEditReps] = useState(workout.reps)
     const [editImageUrl, setEditImageUrl] = useState(workout.imageUrl || '')
+    const [imageSrc, setImageSrc] = useState(workout.imageUrl || '')
+
+    // Normalize any absolute URLs (wrong origin/port) to a relative pathname on mount
+    // so images always load from the current dev server origin.
+    if (imageSrc && imageSrc.includes('://')) {
+        try {
+            const url = new URL(imageSrc, window.location.origin)
+            if (url.origin !== window.location.origin) {
+                const relative = encodeURI(url.pathname)
+                if (relative !== imageSrc) {
+                    setImageSrc(relative)
+                }
+            }
+        } catch(_) {}
+    }
+    const isNewPR = workout && typeof workout.load === 'number' && typeof workout.reps === 'number' && workout._isPR
     
     const handleDelete = async() => {
         const response = await fetch('/api/workouts/'+ workout._id, {
@@ -61,6 +77,29 @@ const WorkoutDetails = ({ workout, onDelete, onEdit }) => {
     // Calculate total volume
     const totalVolume = workout.load * workout.reps
     
+    const tryCleanImageAndPersist = async(currentUrl) => {
+        if (!currentUrl) return
+        try {
+            const url = new URL(currentUrl, window.location.origin)
+            const decoded = decodeURIComponent(url.pathname)
+            const cleanedPath = decoded.replace(/\s+\)\.png$/i, ').png').replace(/^\s+/, '')
+            const cleanedUrl = `${url.origin}${encodeURI(cleanedPath)}`
+            if (cleanedUrl !== currentUrl) {
+                setImageSrc(cleanedUrl)
+                // persist to backend
+                const response = await fetch('/api/workouts/' + workout._id, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ imageUrl: cleanedUrl })
+                })
+                const json = await response.json()
+                if (response.ok) {
+                    dispatch({ type: 'UPDATE_WORKOUT', payload: json })
+                }
+            }
+        } catch(_) {}
+    }
+
     if (isEditing) {
         return (
             <div className="workout-details editing">
@@ -119,19 +158,33 @@ const WorkoutDetails = ({ workout, onDelete, onEdit }) => {
     
     return(
         <div className="workout-details">
-            {workout.imageUrl && (
+            {imageSrc && (
                 <div className="workout-image-container">
                     <img 
-                        src={workout.imageUrl} 
+                        src={imageSrc} 
                         alt={workout.title}
                         className="workout-image"
                         onError={(e) => {
-                            e.target.style.display = 'none'
+                            // Retry with relative path if origin mismatch
+                            try {
+                                const url = new URL(imageSrc, window.location.origin)
+                                if (url.origin !== window.location.origin) {
+                                    setImageSrc(encodeURI(url.pathname))
+                                    return
+                                }
+                                const decoded = decodeURIComponent(url.pathname)
+                                const cleaned = decoded.replace(/\s+\)\.png$/i, ').png').replace(/^\s+/, '')
+                                if (decoded !== cleaned) {
+                                    setImageSrc(encodeURI(cleaned))
+                                    return
+                                }
+                            } catch(_) {}
+                            tryCleanImageAndPersist(imageSrc)
                         }}
                     />
                 </div>
             )}
-            <h4>{workout.title}</h4>
+            <h4>{workout.title} {isNewPR ? '🏅 PR' : ''}</h4>
             
             <div className="workout-stats">
                 <Tooltip text="Weight lifted in this exercise" position="top">

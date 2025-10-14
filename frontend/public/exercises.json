@@ -1,0 +1,9 @@
+[
+  { "name": "Barbell Deadlift", "type": "back", "male": "Barbell Deadlift (Man).png", "female": "Barbell Deadlift (Woman).png" },
+  { "name": "Barbell Squat", "type": "legs", "male": null, "female": "Barbell Squat (Woman).png" },
+  { "name": "Cable Row", "type": "back", "male": "Cable Row (Man).png", "female": "Cable Row (Woman).png" },
+  { "name": "Dumbbell Bench Press", "type": "chest", "male": "Dumbbell Bench Press (Man).png", "female": "Dumbbell Bench Press (Woman).png" },
+  { "name": "Dumbbell Lunges", "type": "legs", "male": "Dumbbell Lunges (Man).png", "female": "Dumbbell Lunges (Woman).png" },
+  { "name": "Lat Pulldown", "type": "back", "male": "Lat Pulldown (Man).png", "female": "Lat Pulldown (Woman) .png" },
+  { "name": "Overhead Press", "type": "shoulders", "male": "Overhead Press (Man).png", "female": "Overhead Press (Woman).png" }
+]
