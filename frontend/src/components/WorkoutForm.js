@@ -140,7 +140,7 @@ const WorkoutForm = ({ onSuccess }) => {
   const handleSubmit = async(e) => {
     e.preventDefault()
     const workout = { title, reps, load, imageUrl, gender, exerciseType }
-    const response = await fetch('/api/workouts', {
+    const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:4000'}/api/workouts`, {
       method: 'POST',
       body: JSON.stringify(workout),
       headers: {  
